@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import no.hvl.dat110.client.Client;
 import no.hvl.dat110.common.TODO;
 import no.hvl.dat110.common.Logger;
 import no.hvl.dat110.messagetransport.Connection;
@@ -12,11 +13,14 @@ public class Storage {
 
 	// data structure for managing subscriptions
 	// maps from a topic to set of subscribed users
+
+	//ConcurrentHashMap<Topic,Set<Users>> subscriptions. Viser bare oversikt over hva "String" er
 	protected ConcurrentHashMap<String, Set<String>> subscriptions;
 	
 	// data structure for managing currently connected clients
 	// maps from user to corresponding client session object
-	
+
+	//ConcurrentHashMap<User,ClientSession> clients
 	protected ConcurrentHashMap<String, ClientSession> clients;
 
 	public Storage() {
@@ -54,8 +58,10 @@ public class Storage {
 
 		// TODO: add corresponding client session to the storage
 		// See ClientSession class
-		
-		throw new UnsupportedOperationException(TODO.method());
+		ClientSession newClient = new ClientSession(user,connection);
+
+		clients.put(user, newClient);
+
 		
 	}
 
@@ -64,38 +70,40 @@ public class Storage {
 		// TODO: disconnet the client (user) 
 		// and remove client session for user from the storage
 		
-		throw new UnsupportedOperationException(TODO.method());
+		clients.get(user).disconnect();
+		clients.remove(user);
+
 		
 	}
 
 	public void createTopic(String topic) {
 
 		// TODO: create topic in the storage
-
-		throw new UnsupportedOperationException(TODO.method());
-	
+			subscriptions.put(topic,ConcurrentHashMap.newKeySet());
 	}
 
 	public void deleteTopic(String topic) {
 
 		// TODO: delete topic from the storage
 
-		throw new UnsupportedOperationException(TODO.method());
-		
+		subscriptions.get(topic);
+		subscriptions.remove(topic);
 	}
 
 	public void addSubscriber(String user, String topic) {
 
 		// TODO: add the user as subscriber to the topic
-		
-		throw new UnsupportedOperationException(TODO.method());
-		
+		Set<String> subscribers = subscriptions.get(topic);
+
+		subscribers.add(user);
+		subscriptions.put(topic,subscribers);
 	}
 
 	public void removeSubscriber(String user, String topic) {
 
 		// TODO: remove the user as subscriber to the topic
+		Set<String> subscribers = subscriptions.get(topic);
+		subscribers.remove(user);
 
-		throw new UnsupportedOperationException(TODO.method());
 	}
 }
